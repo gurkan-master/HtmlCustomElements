@@ -90,6 +90,8 @@ class BeyazKelebek extends HTMLElement {
 	  	 if(this.isClicked) return;
 	  				
 	  	 var that = this.parentElement;
+
+		 if(that._pos != that._screenHyp) return;
 		 
 		 if(that.getAttribute('is-live') == '0' || 
 				that.getAttribute('is-live') == 'false') {
