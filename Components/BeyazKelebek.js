@@ -42,54 +42,73 @@ class BeyazKelebek extends HTMLElement {
 	  this._dalElement = this.children[this.id+'_Dal'];
 	  this._dalElement.isClicked = false;
 
-			this._dalElement.onclick = function(){
-				if(this.isClicked) return;
-				
-				var that = this.parentElement;
-				//dala konmak için uçuyor.
-				that._animationId = setInterval(()=>{
-				if (that._pos == that._screenHyp) {
-					clearInterval(that._animationId);
-					this.isClicked = false;
-					
-					//dala kondu artık kanat çırpmasın :)
-					that.attributeChangedCallback('is-live','1','0');
-					
-					that._beyazKelebekElement.isClicked = false;
-					
-					//dala konduktan sonra geri dönmesi için
-					that._beyazKelebekElement.onclick= function(){
-						if(this.isClicked) return;
-						
-						var that = this.parentElement;
-						that.attributeChangedCallback('is-live','0','1');
-						that._animationId = setInterval(()=>{
-						if (that._pos == 0) {
-							clearInterval(that._animationId);
-							this.isClicked = false;
-						} else {
-							that._pos = that._pos - 1; 
-							that._beyazKelebekElement.style.top = `${that._pos}px`;
-							that._beyazKelebekElement.style.left = `${that._pos}px`;
-							that._flyDirection = 'left'
-						}
-					}, 10);
-						
-					this.isClicked = true;
-					};
-					
-				} else {
-					that._pos = that._pos + 1; 
-					that._beyazKelebekElement.style.top = `${that._pos}px`;
-					that._beyazKelebekElement.style.left = `${that._pos}px`;
-					that._flyDirection = 'right'
-				}
-			 }, 10);
-			 
-			 this.isClicked = true;
-				
-			};
+	  this._dalElement.onclick = function(){
+		var that = this.parentElement;
+		
+	  	if(this.isClicked) return;
+		
+		//kelebek tekrar başlangıç noktasına kadar dönmeli.Sonra dala basarsan gelecektir.
+	  	if(that._beyazKelebekElement.isClicked) return;
+	  	
+		//konduğu dalın kırılmasından korkmayan kelebek özgüvenle uçar :)
+	  	if (that._pos == that._screenHyp) {
+	  		this.src = "./images/kirik_dal.png";
+			that._beyazKelebekElement.onclick();
+	  	} else if(that._pos == 0){
+	  		this.src = "./images/dal.png";
+	  	}
+		
+		//eğer başlangıç noktasında değilse ve animasyon id varsa çıksın ki aşağıda 2. bir animasyon başlamasın.
+		//Çünkü kelebek havada uçmaya devam ediyordur.
+		if(that._pos != 0 && that._animationId != null) return;
+	  	
+	  	//dala konmak için uçuyor.
+	  	that._animationId = setInterval(()=> {
+	  		if (that._pos == that._screenHyp) {
+	  			clearInterval(that._animationId);
+	  			that._dalElement.isClicked = false;
+	  		
+	  			//dala kondu artık kanat çırpmasın :)
+	  			that.setAttribute('is-live','0');
+	  		
+	  			that._beyazKelebekElement.isClicked = false;
+	  		
+	  		} else {
+	  			that._pos = that._pos + 1; 
+	  			that._beyazKelebekElement.style.top = `${that._pos}px`;
+	  			that._beyazKelebekElement.style.left = `${that._pos}px`;
+	  			that._flyDirection = 'right'
+	  		}
+	  	}, 10);
+		
+		this.isClicked = true;
+	  	
+	  };
 	  
+	  //dala konduktan sonra geri dönmesi için
+	   this._beyazKelebekElement.onclick= function(){
+	  	 if(this.isClicked) return;
+	  				
+	  	 var that = this.parentElement;
+		 
+		 if(that.getAttribute('is-live') == '0' || 
+				that.getAttribute('is-live') == 'false') {
+				that.setAttribute('is-live','1');
+		 }
+	  	 
+	  	 that._animationId = setInterval(()=>{
+	  		if (that._pos == 0) {
+	  			clearInterval(that._animationId);
+	  			this.isClicked = false;
+	  		} else {
+	  			that._pos = that._pos - 1; 
+	  			that._beyazKelebekElement.style.top = `${that._pos}px`;
+	  			that._beyazKelebekElement.style.left = `${that._pos}px`;
+	  			that._flyDirection = 'left'
+	  		}
+	  	  }, 10);
+		 
+	    };
 	  
    }
 
